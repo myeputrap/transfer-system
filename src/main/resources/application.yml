@@ -20,6 +20,11 @@ spring:
           auth: true
           starttls:
             enable: true
+  security:
+    user:
+      name: user
+      password: password
+      roles: ADMIN
   data:
     redis:
       host: "localhost"
