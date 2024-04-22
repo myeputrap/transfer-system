@@ -1,5 +1,6 @@
 package com.example.transfersystem.entity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,14 +21,14 @@ public class Transaction {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "sender_account_id")
-    private Account senderAccount;
+    @JoinColumn(name = "register_account_transfer_id")
+    private RegisterAccountTransfer registerAccountTransfer;
 
-    @ManyToOne
-    @JoinColumn(name = "receiver_account_id")
-    private Account receiverAccount;
-
+    @DecimalMin(value = "10000", message = "Amount must be at least 10000")
     private BigDecimal amount;
-    private LocalDateTime timestamp;
-    private String status;
+    @DecimalMin(value = "10000", message = "Amount must be at least 10000")
+    private BigDecimal totalAmount;
+    private LocalDateTime dtmCrt;
+
+    private LocalDateTime dtmUpd;
 }

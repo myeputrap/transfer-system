@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -19,6 +20,11 @@ public class Bank implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String code;
+
+
+
+    private LocalDateTime dtmCrt;
+
+    private LocalDateTime dtmUpd;
 }
 

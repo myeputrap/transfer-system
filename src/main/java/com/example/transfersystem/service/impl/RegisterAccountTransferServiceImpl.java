@@ -40,9 +40,11 @@ public class RegisterAccountTransferServiceImpl implements RegisterAccountTransf
     @Override
     public String addRegisterAccountTransfer(RegisterAccountTransferRequest registerAccountTransferRequest) {
         RegisterAccountTransfer registerAccountTransfer = new RegisterAccountTransfer();
-        Bank bank = bankRepository.findById(registerAccountTransferRequest.getBankID())
-                .orElseThrow(() -> new ResourceNotFoundException("Bank", "id", registerAccountTransferRequest.getBankID()));
-
+       if (registerAccountTransferRequest.getBankID() != null || registerAccountTransferRequest.getBankID() != 0){
+           Bank bank = bankRepository.findById(registerAccountTransferRequest.getBankID())
+                   .orElseThrow(() -> new ResourceNotFoundException("Bank", "id", registerAccountTransferRequest.getBankID()));
+           registerAccountTransfer.setBank(bank);
+       }
         Account accountSender = accountRepository.findById(registerAccountTransferRequest.getSenderId())
                 .orElseThrow(() -> new ResourceNotFoundException("AccountSender", "id", registerAccountTransferRequest.getSenderId()));
 
@@ -51,7 +53,7 @@ public class RegisterAccountTransferServiceImpl implements RegisterAccountTransf
         registerAccountTransfer.setDtmCrt(LocalDateTime.now());
         registerAccountTransfer.setSenderAccount(accountSender);
         registerAccountTransfer.setReceiverAccount(accountReceiver);
-        registerAccountTransfer.setBank(bank);
+
         registerAccountTransferRepository.save(registerAccountTransfer);
         return "Success";
     }
@@ -63,9 +65,7 @@ public class RegisterAccountTransferServiceImpl implements RegisterAccountTransf
         for (int i = 0; i < registerAccountTransferByIDSender.size(); i++) {
             GetRegisterAccountTransferResponse resact = new GetRegisterAccountTransferResponse();
             RegisterAccountTransfer item = registerAccountTransferByIDSender.get(i);
-            Bank bank = bankRepository.findById(item.getBank().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Bank", "id", item.getBank().getId()));
-
+            resact.setBank("Same with user");
             Account accountSender = accountRepository.findById(item.getReceiverAccount().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("AccountReceiver", "id", item.getReceiverAccount().getId()));
 
@@ -74,11 +74,14 @@ public class RegisterAccountTransferServiceImpl implements RegisterAccountTransf
 
             resact.setAccountNumber(accountSender.getAccountNumber());
             resact.setName(user.getName());
-//            if (item.getBank().getId()== null || item.getBank().getId() == 0){
-//
-//            }
-            resact.setBank(bank.getName());
-x`            res.add(resact);
+            if (item.getBank() != null && item.getBank().getId() != null && item.getBank().getId() != 0) {
+                Bank bank = bankRepository.findById(item.getBank().getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Bank", "id", item.getBank().getId()));
+                resact.setBank(bank.getName());
+
+            }
+
+            res.add(resact);
         }
         return res;
     }

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -27,5 +28,9 @@ public class Account {
     private String accountNumber;
 
     private BigDecimal balance;
-    private String accountType;
+
+
+    private LocalDateTime dtmCrt;
+
+    private LocalDateTime dtmUpd;
 }
