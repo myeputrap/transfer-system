@@ -29,3 +29,6 @@ To use the transfer system, follow these steps:
 - **Add new network
 - **Craete new container postgre
 - **docker build for repo
+
+## Postman Collection
+- file with .json as extension
