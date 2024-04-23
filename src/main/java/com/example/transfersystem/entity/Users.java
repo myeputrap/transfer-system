@@ -35,6 +35,17 @@ public class Users {
     private LocalDateTime dtmCrt;
 
     private LocalDateTime dtmUpd;
+
+    public Users(Long id, String name, String username, String password, String email, LocalDateTime dtmCrt, LocalDateTime dtmUpd) {
+        this.id = id;
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.dtmCrt = dtmCrt;
+        this.dtmUpd = dtmUpd;
+    }
+
 }
 
 

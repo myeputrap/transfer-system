@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,7 @@ public class BankServiceImpl implements BankService {
     @Override
     public List<BankDto> getAllBank() {
         try {
+            logger.info("Start of caching");
             Boolean hasKey = redisTemplate.hasKey(key);
 
             if (hasKey != null && hasKey) {
@@ -57,7 +59,8 @@ public class BankServiceImpl implements BankService {
             logger.error("Error occurred", e);
             throw new ErrorAPIException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while retrieving banks");
         }
-}}
+    }
+}
 
 
 

@@ -69,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
         return "Success";
         } catch (Exception e) {
            logger.error("An error occurred changePassword", e);
-            throw new ErrorAPIException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred");
+            throw new ErrorAPIException(HttpStatus.INTERNAL_SERVER_ERROR, "An error while change password");
         }
     }
 }

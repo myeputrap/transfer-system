@@ -4,6 +4,7 @@ import com.example.transfersystem.entity.Account;
 import com.example.transfersystem.entity.RegisterAccountTransfer;
 import com.example.transfersystem.entity.Transaction;
 import com.example.transfersystem.entity.Users;
+import com.example.transfersystem.exception.ErrorAPIException;
 import com.example.transfersystem.exception.ResourceNotFoundException;
 import com.example.transfersystem.payload.TransactionDto;
 import com.example.transfersystem.payload.TransactionResponse;
@@ -11,6 +12,9 @@ import com.example.transfersystem.payload.TransferRequest;
 import com.example.transfersystem.repository.*;
 import com.example.transfersystem.service.TransasctionService;
 import io.lettuce.core.TransactionResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,7 +30,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TransactionServiceImpl implements TransasctionService {
-
+    private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
     private RegisterAccountTransferRepository registerAccountTransferRepository;
 
     private BankRepository bankRepository;
@@ -47,72 +51,86 @@ public class TransactionServiceImpl implements TransasctionService {
 
     @Override
     public String TransferBetweenCust(TransferRequest transferRequest) {
-        Transaction transaction = new Transaction();
-        transaction.setAmount(transferRequest.getAmount());
-        transaction.setTotalAmount(transferRequest.getAmount());
-        BigDecimal totalAmount;
-        RegisterAccountTransfer registerAccountTransfer = registerAccountTransferRepository.findById(transferRequest.getRegisterAccountTransferId())
-                .orElseThrow(() -> new ResourceNotFoundException("RegisterAccountTransfer", "id", transferRequest.getRegisterAccountTransferId()));
-//
-//        Account accountSender = accountRepository.findById(registerAccountTransfer.getSenderAccount().getId())
-//                .orElseThrow(() -> new ResourceNotFoundException("AccountSender", "id", registerAccountTransfer.getSenderAccount().getId()));
+        try {
+            Transaction transaction = new Transaction();
+            transaction.setAmount(transferRequest.getAmount());
+            transaction.setTotalAmount(transferRequest.getAmount());
+            BigDecimal totalAmount;
+            RegisterAccountTransfer registerAccountTransfer = registerAccountTransferRepository.findById(transferRequest.getRegisterAccountTransferId())
+                    .orElseThrow(() -> new ResourceNotFoundException("RegisterAccountTransfer", "id", transferRequest.getRegisterAccountTransferId()));
+
+            Account accountSender = accountRepository.findById(registerAccountTransfer.getSenderAccount().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("AccountSender", "id", registerAccountTransfer.getSenderAccount().getId()));
 //
 //        Account accountReceiver = accountRepository.findById(registerAccountTransfer.getReceiverAccount().getId())
 //                .orElseThrow(() -> new ResourceNotFoundException("AccountReceiver", "id", registerAccountTransfer.getReceiverAccount().getId()));
-        if (registerAccountTransfer.getBank() != null && registerAccountTransfer.getBank().getId() != null && registerAccountTransfer.getBank().getId() != 0) {
-            totalAmount = transferRequest.getAmount().add(BigDecimal.valueOf(6500));
-            transaction.setTotalAmount(totalAmount);
+            if (registerAccountTransfer.getBank() != null && registerAccountTransfer.getBank().getId() != null && registerAccountTransfer.getBank().getId() != 0) {
+                totalAmount = transferRequest.getAmount().add(BigDecimal.valueOf(6500));
+                transaction.setTotalAmount(totalAmount);
+            }
+
+            if (transaction.getTotalAmount().compareTo(accountSender.getBalance()) <= 0) {
+                throw new ErrorAPIException(HttpStatus.BAD_REQUEST, "Transfer Amount cannot be greater than sender balance");
+            }
+            transaction.setRegisterAccountTransfer(registerAccountTransfer);
+            transaction.setDtmCrt(LocalDateTime.now());
+            transactionRepository.save(transaction);
+            return "Success";
+        } catch (Exception e) {
+            logger.error("Error occurred", e);
+            throw new ErrorAPIException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while add transaction");
         }
-        transaction.setRegisterAccountTransfer(registerAccountTransfer);
-        transaction.setDtmCrt(LocalDateTime.now());
-        transactionRepository.save(transaction);
-        return "Success";
     }
 
     @Override
     public TransactionDto getAllTransaction(int pageNo, int pageSize, String sortBy, String sortDir) {
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
+        try {
+            Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                    : Sort.by(sortBy).descending();
 
-        // create Pageable instance
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+            Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-        Page<Transaction> posts = transactionRepository.findAll(pageable);
-        List<Transaction> res = posts.getContent();
-        List<TransactionResponse> transactionResponses = new ArrayList<>();
-        for (int i = 0; i < res.size(); i++) {
-        TransactionResponse transactionResponse = new TransactionResponse();
-        Transaction item = res.get(i);
+            Page<Transaction> posts = transactionRepository.findAll(pageable);
+            List<Transaction> res = posts.getContent();
+            List<TransactionResponse> transactionResponses = new ArrayList<>();
+            for (int i = 0; i < res.size(); i++) {
+                TransactionResponse transactionResponse = new TransactionResponse();
+                Transaction item = res.get(i);
 
 
-        RegisterAccountTransfer registerAccountTransfer = registerAccountTransferRepository.findById(item.getRegisterAccountTransfer().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("AccountSender", "id", item.getRegisterAccountTransfer().getId()));
+                RegisterAccountTransfer registerAccountTransfer = registerAccountTransferRepository.findById(item.getRegisterAccountTransfer().getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("AccountSender", "id", item.getRegisterAccountTransfer().getId()));
 
-        Account accountSender = accountRepository.findById(registerAccountTransfer.getSenderAccount().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("AccountSender", "id", registerAccountTransfer.getSenderAccount().getId()));
+                Account accountSender = accountRepository.findById(registerAccountTransfer.getSenderAccount().getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("AccountSender", "id", registerAccountTransfer.getSenderAccount().getId()));
 
-        Account accountReceiver = accountRepository.findById(registerAccountTransfer.getReceiverAccount().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("AccountReceiver", "id", registerAccountTransfer.getReceiverAccount().getId()));
+                Account accountReceiver = accountRepository.findById(registerAccountTransfer.getReceiverAccount().getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("AccountReceiver", "id", registerAccountTransfer.getReceiverAccount().getId()));
 
-        Users user = userRepository.findById(registerAccountTransfer.getReceiverAccount().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("AccountReceiver", "id", registerAccountTransfer.getReceiverAccount().getId()));
-            transactionResponse.setDtmCrt(item.getDtmCrt());
-            transactionResponse.setReceiverName(user.getName());
-            transactionResponse.setAccountNumber(accountReceiver.getAccountNumber());
-            transactionResponse.setAmount(item.getAmount());
-            transactionResponse.setAmount(item.getTotalAmount());
-            transactionResponses.add(transactionResponse);
+                Users user = userRepository.findById(registerAccountTransfer.getReceiverAccount().getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("AccountReceiver", "id", registerAccountTransfer.getReceiverAccount().getId()));
+                transactionResponse.setDtmCrt(item.getDtmCrt());
+                transactionResponse.setReceiverName(user.getName());
+                transactionResponse.setAccountNumber(accountReceiver.getAccountNumber());
+                transactionResponse.setAmount(item.getAmount());
+                transactionResponse.setAmount(item.getTotalAmount());
+                transactionResponses.add(transactionResponse);
+            }
+
+
+            TransactionDto TransactionDto = new TransactionDto();
+            TransactionDto.setContent(transactionResponses);
+            TransactionDto.setPageNo(posts.getNumber());
+            TransactionDto.setPageSize(posts.getSize());
+            TransactionDto.setTotalElements(posts.getTotalElements());
+            TransactionDto.setTotalPages(posts.getTotalPages());
+            TransactionDto.setLast(posts.isLast());
+            return TransactionDto;
+
+        } catch (Exception e) {
+            logger.error("Error occurred", e);
+            throw new ErrorAPIException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while add transaction");
         }
-
-
-        TransactionDto TransactionDto = new TransactionDto();
-        TransactionDto.setContent(transactionResponses);
-        TransactionDto.setPageNo(posts.getNumber());
-        TransactionDto.setPageSize(posts.getSize());
-        TransactionDto.setTotalElements(posts.getTotalElements());
-        TransactionDto.setTotalPages(posts.getTotalPages());
-        TransactionDto.setLast(posts.isLast());
-        return TransactionDto;
     }
 
 
