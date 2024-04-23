@@ -1,0 +1,209 @@
+{
+	"info": {
+		"_postman_id": "a7dbae83-512e-48f4-95d8-088a92dd3bec",
+		"name": "TransferSystemCollection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "7836079"
+	},
+	"item": [
+		{
+			"name": "LOGIN",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "password",
+						"username": "username"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"usernameOrEmail\" : \"user1\",\r\n    \"password\" : \"password123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/auth/login"
+			},
+			"response": []
+		},
+		{
+			"name": "GET BANK",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbWFpbEBnbWFpbC5jb20iLCJpYXQiOjE3MTM3NjE5MjQsImV4cCI6MTcxMzc2Nzk3Mn0.hmShRpwDHjuoBIMhnYJ3RyUmMyJfp5YsRaOfbUHnHyZlkpaR8FVInt_BNA0QyyI1"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/bank"
+			},
+			"response": []
+		},
+		{
+			"name": "GET PROFILE",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbWFpbEBnbWFpbC5jb20iLCJpYXQiOjE3MTM3NjE5MjQsImV4cCI6MTcxMzc2Nzk3Mn0.hmShRpwDHjuoBIMhnYJ3RyUmMyJfp5YsRaOfbUHnHyZlkpaR8FVInt_BNA0QyyI1"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8080/api/v1/user/profile"
+			},
+			"response": []
+		},
+		{
+			"name": "CHANGE PASSWORD",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbWFpbEBnbWFpbC5jb20iLCJpYXQiOjE3MTM3NjMzNzksImV4cCI6MTcxMzc2OTQyN30.3KzxPDT8ZVR3XzxFDWaU9R8QDiPB_3xYgCvygp7uOMGyNkZBqnODJMfn_RsWCDwJ"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"newPassword\" : \"password123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/auth/user/change-password"
+			},
+			"response": []
+		},
+		{
+			"name": "POST ACC REG TR",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbWFpbEBlbWFpbCIsImlhdCI6MTcxMzc4MTE3MSwiZXhwIjoxNzEzNzg3MjE5fQ.RfuJnCYvaKHNfBf5hWdMSfBiMVPG-Xtiod1y18c0tabmjWG5yYvdH1svPOyt-vmP"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"senderId\" : 1,\r\n    \"receiverId\" : 2,\r\n    \"bankID\" : 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/register-account-tr"
+			},
+			"response": []
+		},
+		{
+			"name": "GET LIST OF ACCOUNT TR",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbWFpbEBlbWFpbCIsImlhdCI6MTcxMzc4MTYwOSwiZXhwIjoxNzEzNzg3NjU3fQ.OnpQrhpzknDqYRLWWXJ6A0lhnr_9n0HOCznN8lznkQ_aAFY6ARoH1W6yIYFyPiSl"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8080/api/v1/register-account-tr/2"
+			},
+			"response": []
+		},
+		{
+			"name": "POST TRANSACTION",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbWFpbEBlbWFpbCIsImlhdCI6MTcxMzgwMDAzNiwiZXhwIjoxNzEzODA2MDg0fQ.ow4JKRilCyiaOf4Vo2vo_qVCoq4OtTvle48dhVg9knllSQ83fQHi9_vORp5JnAeq"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n{\r\n    \"registerAccountTransferId\" : 1,\r\n    \"amount\" : 100000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/transaction"
+			},
+			"response": []
+		},
+		{
+			"name": "GET TRANSACTION WITH METADATA",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbWFpbEBlbWFpbCIsImlhdCI6MTcxMzgwMDAzNiwiZXhwIjoxNzEzODA2MDg0fQ.ow4JKRilCyiaOf4Vo2vo_qVCoq4OtTvle48dhVg9knllSQ83fQHi9_vORp5JnAeq"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/transaction?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"transaction"
+					],
+					"query": [
+						{
+							"key": "pageNo",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						},
+						{
+							"key": "sortBy",
+							"value": "id"
+						},
+						{
+							"key": "sortDir",
+							"value": "asc"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
