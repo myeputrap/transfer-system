@@ -14,4 +14,5 @@ public class GetProfileResponse {
     private String name;
     private String username;
     private String email;
+
 }
