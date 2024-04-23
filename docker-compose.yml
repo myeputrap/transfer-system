@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  PostgresSQL:
+    container_name: postgres-docker
+    image: postgres:alpine
+    environment:
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: system_transfer
+    networks:
+      springboot-mysql-net:
+
+  springboot-restful-webservices:
+    container_name: springboot-restful-webservices
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - PostgresSQL
+    networks:
+      springboot-mysql-net:
+    restart: on-failure
+
+networks:
+  springboot-mysql-net:
